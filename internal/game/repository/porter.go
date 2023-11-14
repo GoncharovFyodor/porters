@@ -5,7 +5,7 @@ import (
 	"porters/internal/game/model"
 )
 
-// GetPorterInfo получает информацию о грузчике
+// GetPorterInfo РїРѕР»СѓС‡Р°РµС‚ РёРЅС„РѕСЂРјР°С†РёСЋ Рѕ РіСЂСѓР·С‡РёРєРµ
 func (s Storage) GetPorterInfo(ctx context.Context, porterID int) (model.GetAndCreatePorterInfo, error) {
 	porter := model.GetAndCreatePorterInfo{}
 	if err := s.pgPool.QueryRow(ctx, "SELECT max_weight, drunk, fatigue, salary FROM porters WHERE user_id = $1", porterID).
@@ -16,7 +16,7 @@ func (s Storage) GetPorterInfo(ctx context.Context, porterID int) (model.GetAndC
 	return porter, nil
 }
 
-// GetCompletedPorterTasks получает завершенные задачи грузчика
+// GetCompletedPorterTasks РїРѕР»СѓС‡Р°РµС‚ Р·Р°РІРµСЂС€РµРЅРЅС‹Рµ Р·Р°РґР°С‡Рё РіСЂСѓР·С‡РёРєР°
 func (s Storage) GetCompletedPorterTasks(ctx context.Context, porterID int) ([]model.GetCompletedPorterTasksResponse, error) {
 	rows, err := s.pgPool.Query(ctx, "SELECT id, name, weight, porter_id FROM tasks WHERE porter_id = $1", porterID)
 	if err != nil {
@@ -34,7 +34,7 @@ func (s Storage) GetCompletedPorterTasks(ctx context.Context, porterID int) ([]m
 	return tasks, nil
 }
 
-// UpdatePorter обновляет степень усталости грузчика
+// UpdatePorter РѕР±РЅРѕРІР»СЏРµС‚ СЃС‚РµРїРµРЅСЊ СѓСЃС‚Р°Р»РѕСЃС‚Рё РіСЂСѓР·С‡РёРєР°
 func (s Storage) UpdatePorter(ctx context.Context, porterID int, fatigue float64) error {
 	_, err := s.pgPool.Exec(ctx, "UPDATE porters SET fatigue = $1 WHERE user_id = $2", fatigue, porterID)
 	return err

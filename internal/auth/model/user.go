@@ -3,8 +3,11 @@ package model
 import "github.com/go-playground/validator/v10"
 
 var (
+	// CustomerRole роль "заказчик"
 	CustomerRole = "customer"
-	PorterRole   = "porter"
+
+	// PorterRole роль "грузчик"
+	PorterRole = "porter"
 
 	validate *validator.Validate
 )

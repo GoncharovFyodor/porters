@@ -5,7 +5,7 @@ import (
 	"porters/internal/game/model"
 )
 
-// CustomerRepository репозиторий заказчика
+// CustomerRepository СЂРµРїРѕР·РёС‚РѕСЂРёР№ Р·Р°РєР°Р·С‡РёРєР°
 type CustomerRepository interface {
 	GetCustomerInfo(ctx context.Context, customerID int) (model.GetCustomerInfoResponse, error)
 	GetAvailableTasksForCustomer(ctx context.Context, customerID int) ([]model.GetAvailableTasksForCustomerResponse, error)
@@ -13,34 +13,34 @@ type CustomerRepository interface {
 	UpdateCustomer(ctx context.Context, customerID int, customerStartCapital int) error
 }
 
-// GameRepository репозиторий игры
+// GameRepository СЂРµРїРѕР·РёС‚РѕСЂРёР№ РёРіСЂС‹
 type GameRepository interface {
 	CustomerRepository
 	PorterRepository
 	TaskRepository
 }
 
-// GameService сервис игры
+// GameService СЃРµСЂРІРёСЃ РёРіСЂС‹
 type GameService struct {
 	gameRepository GameRepository
 }
 
-// NewGame создает новую игру
+// NewGame СЃРѕР·РґР°РµС‚ РЅРѕРІСѓСЋ РёРіСЂСѓ
 func NewGame(gameRepository GameRepository) GameService {
 	return GameService{gameRepository: gameRepository}
 }
 
-// GetCustomerInfo получает информацию о заказчиках
+// GetCustomerInfo РїРѕР»СѓС‡Р°РµС‚ РёРЅС„РѕСЂРјР°С†РёСЋ Рѕ Р·Р°РєР°Р·С‡РёРєР°С…
 func (gs GameService) GetCustomerInfo(ctx context.Context, customerID int) (model.GetCustomerInfoResponse, error) {
 	return gs.gameRepository.GetCustomerInfo(ctx, customerID)
 }
 
-// GetAvailableTasksForCustomer получает список доступных задач для заказчика
+// GetAvailableTasksForCustomer РїРѕР»СѓС‡Р°РµС‚ СЃРїРёСЃРѕРє РґРѕСЃС‚СѓРїРЅС‹С… Р·Р°РґР°С‡ РґР»СЏ Р·Р°РєР°Р·С‡РёРєР°
 func (gs GameService) GetAvailableTasksForCustomer(ctx context.Context, customerID int) ([]model.GetAvailableTasksForCustomerResponse, error) {
 	return gs.gameRepository.GetAvailableTasksForCustomer(ctx, customerID)
 }
 
-// StartGame запускает игру
+// StartGame Р·Р°РїСѓСЃРєР°РµС‚ РёРіСЂСѓ
 func (gs GameService) StartGame(ctx context.Context, customerID int, porterIDs []int, taskID int) (bool, error) {
 	customerStartCapital, porters, err := gs.gameRepository.GetCustomerAndPortersStats(ctx, customerID, porterIDs, taskID)
 	if err != nil {
@@ -57,7 +57,7 @@ func (gs GameService) StartGame(ctx context.Context, customerID int, porterIDs [
 	for _, porter := range porters {
 		totalPortersSalary += porter.Salary
 
-		// расчет поднятого веса для пьяных и трезвых грузчиков
+		// СЂР°СЃС‡РµС‚ РїРѕРґРЅСЏС‚РѕРіРѕ РІРµСЃР° РґР»СЏ РїСЊСЏРЅС‹С… Рё С‚СЂРµР·РІС‹С… РіСЂСѓР·С‡РёРєРѕРІ
 		if porter.Drunk {
 			totalMaxWeight += float64(porter.MaxWeight) * ((100 - porter.Fatigue) / 100) * (porter.Fatigue + 50/100)
 		} else {

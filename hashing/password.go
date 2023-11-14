@@ -5,7 +5,7 @@ import (
 	"fmt"
 )
 
-// Хешер пароля с использованием заданной соли
+// SHA1Hasher хешер пароля с использованием заданной соли
 type SHA1Hasher struct {
 	salt string
 }

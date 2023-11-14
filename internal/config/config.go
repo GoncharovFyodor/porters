@@ -6,23 +6,23 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-// Config данные конфигурации
+// Config РґР°РЅРЅС‹Рµ РєРѕРЅС„РёРіСѓСЂР°С†РёРё
 type Config struct {
 	Srv HTTPServer `yaml:"httpSrv"`
 	DB  DB         `yaml:"db"`
 }
 
-// HTTPServer данные сервера HTTP
+// HTTPServer РґР°РЅРЅС‹Рµ СЃРµСЂРІРµСЂР° HTTP
 type HTTPServer struct {
 	Addr string `yaml:"addr"`
 }
 
-// DB данные для подключения к БД
+// DB РґР°РЅРЅС‹Рµ РґР»СЏ РїРѕРґРєР»СЋС‡РµРЅРёСЏ Рє Р‘Р”
 type DB struct {
 	Conn string `yaml:"conn"`
 }
 
-// New получает данные конфигурации из файла
+// New РїРѕР»СѓС‡Р°РµС‚ РґР°РЅРЅС‹Рµ РєРѕРЅС„РёРіСѓСЂР°С†РёРё РёР· С„Р°Р№Р»Р°
 func New(path string) (*Config, error) {
 	file, err := os.OpenFile(path, os.O_RDONLY, 0755)
 	if err != nil {
