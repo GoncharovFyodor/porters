@@ -9,19 +9,19 @@ import (
 	"github.com/golang-jwt/jwt"
 )
 
-// PasswordHasher хешер паролей
+// PasswordHasher С…РµС€РµСЂ РїР°СЂРѕР»РµР№
 type PasswordHasher interface {
 	Hash(password string) (string, error)
 }
 
-// UserRepository репозиторий пользователя
+// UserRepository СЂРµРїРѕР·РёС‚РѕСЂРёР№ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ
 type UserRepository interface {
 	CreateUser(ctx context.Context, user model.User) error
 	GetByCredentials(ctx context.Context, username, password string) (model.User, error)
 	Close()
 }
 
-// User пользователь
+// User РїРѕР»СЊР·РѕРІР°С‚РµР»СЊ
 type User struct {
 	repository UserRepository
 	hasher     PasswordHasher
@@ -29,7 +29,7 @@ type User struct {
 	secret []byte
 }
 
-// NewUser создает нового пользователя
+// NewUser СЃРѕР·РґР°РµС‚ РЅРѕРІРѕРіРѕ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ
 func NewUser(repository UserRepository, hasher PasswordHasher, secret []byte) *User {
 	return &User{
 		repository: repository,
@@ -38,7 +38,7 @@ func NewUser(repository UserRepository, hasher PasswordHasher, secret []byte) *U
 	}
 }
 
-// SignupUser регистрирует нового пользователя
+// SignupUser СЂРµРіРёСЃС‚СЂРёСЂСѓРµС‚ РЅРѕРІРѕРіРѕ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ
 func (s *User) SignupUser(ctx context.Context, request model.SignupUserRequest) error {
 	password, err := s.hasher.Hash(request.Password)
 	if err != nil {
@@ -52,7 +52,7 @@ func (s *User) SignupUser(ctx context.Context, request model.SignupUserRequest) 
 	})
 }
 
-// LoginUser осуществляет логин нового пользователя
+// LoginUser РѕСЃСѓС‰РµСЃС‚РІР»СЏРµС‚ Р»РѕРіРёРЅ РЅРѕРІРѕРіРѕ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ
 func (s *User) LoginUser(ctx context.Context, request model.LoginUserRequest) (string, error) {
 	password, err := s.hasher.Hash(request.Password)
 	if err != nil {
@@ -64,7 +64,7 @@ func (s *User) LoginUser(ctx context.Context, request model.LoginUserRequest) (s
 		return "", err
 	}
 
-	// получение токена на 20 минут для данного пользователя
+	// РїРѕР»СѓС‡РµРЅРёРµ С‚РѕРєРµРЅР° РЅР° 20 РјРёРЅСѓС‚ РґР»СЏ РґР°РЅРЅРѕРіРѕ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.StandardClaims{
 		ExpiresAt: time.Now().Add(20 * time.Minute).Unix(),
 		IssuedAt:  time.Now().Unix(),
@@ -72,7 +72,7 @@ func (s *User) LoginUser(ctx context.Context, request model.LoginUserRequest) (s
 		Subject:   strconv.Itoa(user.ID),
 	})
 
-	// подписание токена секретным ключом
+	// РїРѕРґРїРёСЃР°РЅРёРµ С‚РѕРєРµРЅР° СЃРµРєСЂРµС‚РЅС‹Рј РєР»СЋС‡РѕРј
 	response, err := token.SignedString(s.secret)
 	if err != nil {
 		return "", err

@@ -5,19 +5,19 @@ import (
 	"porters/internal/game/model"
 )
 
-// PorterRepository репозиторий грузчика
+// PorterRepository СЂРµРїРѕР·РёС‚РѕСЂРёР№ РіСЂСѓР·С‡РёРєР°
 type PorterRepository interface {
 	GetPorterInfo(ctx context.Context, porterID int) (model.GetAndCreatePorterInfo, error)
 	GetCompletedPorterTasks(ctx context.Context, porterID int) ([]model.GetCompletedPorterTasksResponse, error)
 	UpdatePorter(ctx context.Context, porterID int, fatigue float64) error
 }
 
-// GetPorterInfo получает информацию о грузчике
+// GetPorterInfo РїРѕР»СѓС‡Р°РµС‚ РёРЅС„РѕСЂРјР°С†РёСЋ Рѕ РіСЂСѓР·С‡РёРєРµ
 func (gs GameService) GetPorterInfo(ctx context.Context, porterID int) (model.GetAndCreatePorterInfo, error) {
 	return gs.gameRepository.GetPorterInfo(ctx, porterID)
 }
 
-// GetCompletedPorterTasks получает список выполненных грузчиком задач
+// GetCompletedPorterTasks РїРѕР»СѓС‡Р°РµС‚ СЃРїРёСЃРѕРє РІС‹РїРѕР»РЅРµРЅРЅС‹С… РіСЂСѓР·С‡РёРєРѕРј Р·Р°РґР°С‡
 func (gs GameService) GetCompletedPorterTasks(ctx context.Context, porterID int) ([]model.GetCompletedPorterTasksResponse, error) {
 	return gs.gameRepository.GetCompletedPorterTasks(ctx, porterID)
 }

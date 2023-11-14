@@ -11,29 +11,29 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-// Storage хранилище
+// Storage С…СЂР°РЅРёР»РёС‰Рµ
 type Storage struct {
 	pgPool *pgxpool.Pool
 }
 
-// NewStorage создает новое хранилище
+// NewStorage СЃРѕР·РґР°РµС‚ РЅРѕРІРѕРµ С…СЂР°РЅРёР»РёС‰Рµ
 func NewStorage(pool *pgxpool.Pool) Storage {
 	return Storage{pool}
 }
 
-// Close закрывает соединение с хранилищем
+// Close Р·Р°РєСЂС‹РІР°РµС‚ СЃРѕРµРґРёРЅРµРЅРёРµ СЃ С…СЂР°РЅРёР»РёС‰РµРј
 func (s Storage) Close() {
 	s.pgPool.Close()
 }
 
-// CreateUser создает пользователя
+// CreateUser СЃРѕР·РґР°РµС‚ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ
 func (s Storage) CreateUser(ctx context.Context, user authmodel.User) error {
 	tx, err := s.pgPool.Begin(ctx)
 	if err != nil {
 		return err
 	}
 
-	// Добавление данных о пользователе в БД и возвращение идентификатора
+	// Р”РѕР±Р°РІР»РµРЅРёРµ РґР°РЅРЅС‹С… Рѕ РїРѕР»СЊР·РѕРІР°С‚РµР»Рµ РІ Р‘Р” Рё РІРѕР·РІСЂР°С‰РµРЅРёРµ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂР°
 	var id int
 	if err = tx.QueryRow(ctx, "INSERT INTO users (username, password, role) VALUES ($1, $2, $3) RETURNING id",
 		user.Username, user.Password, user.Role).Scan(&id); err != nil {
@@ -44,14 +44,14 @@ func (s Storage) CreateUser(ctx context.Context, user authmodel.User) error {
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 
 	if user.Role == model.CustomerRole {
-		// Добавление данных о заказчике в БД
+		// Р”РѕР±Р°РІР»РµРЅРёРµ РґР°РЅРЅС‹С… Рѕ Р·Р°РєР°Р·С‡РёРєРµ РІ Р‘Р”
 		if _, err = tx.Exec(ctx, "INSERT INTO customers (user_id, start_capital) VALUES ($1, $2)",
 			id, r.Intn(100000-10000+1)+10000); err != nil {
 			tx.Rollback(ctx)
 			return err
 		}
 	} else if user.Role == model.PorterRole {
-		// Добавление данных о грузчике в БД
+		// Р”РѕР±Р°РІР»РµРЅРёРµ РґР°РЅРЅС‹С… Рѕ РіСЂСѓР·С‡РёРєРµ РІ Р‘Р”
 		if _, err = tx.Exec(ctx, "INSERT INTO porters (user_id, max_weight, drunk, fatigue, salary) VALUES ($1, $2, $3, $4, $5)",
 			id, r.Intn(30-5+1)+5, r.Intn(2) == 1, math.Round((r.Float64())*100+1), r.Intn(30000-10000+1)+10000); err != nil {
 			tx.Rollback(ctx)
@@ -61,7 +61,7 @@ func (s Storage) CreateUser(ctx context.Context, user authmodel.User) error {
 	return tx.Commit(ctx)
 }
 
-// GetByCredentials получает данные пользователя по введенным имени пользователя и паролю
+// GetByCredentials РїРѕР»СѓС‡Р°РµС‚ РґР°РЅРЅС‹Рµ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ РїРѕ РІРІРµРґРµРЅРЅС‹Рј РёРјРµРЅРё РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ Рё РїР°СЂРѕР»СЋ
 func (s Storage) GetByCredentials(ctx context.Context, username, password string) (authmodel.User, error) {
 	var user authmodel.User
 	if err := s.pgPool.QueryRow(ctx, "SELECT id, username, password, role FROM users WHERE username = $1 AND password = $2",

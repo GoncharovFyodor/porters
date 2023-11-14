@@ -7,22 +7,22 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-// Storafe хранилище
+// Storafe С…СЂР°РЅРёР»РёС‰Рµ
 type Storage struct {
 	pgPool *pgxpool.Pool
 }
 
-// NewStorage возвращает новое хранилище
+// NewStorage РІРѕР·РІСЂР°С‰Р°РµС‚ РЅРѕРІРѕРµ С…СЂР°РЅРёР»РёС‰Рµ
 func NewStorage(pool *pgxpool.Pool) Storage {
 	return Storage{pool}
 }
 
-// Close закрывает соединение с хранилищем
+// Close Р·Р°РєСЂС‹РІР°РµС‚ СЃРѕРµРґРёРЅРµРЅРёРµ СЃ С…СЂР°РЅРёР»РёС‰РµРј
 func (s Storage) Close() {
 	s.pgPool.Close()
 }
 
-// GetCustomerInfo получает информацию о заказчике
+// GetCustomerInfo РїРѕР»СѓС‡Р°РµС‚ РёРЅС„РѕСЂРјР°С†РёСЋ Рѕ Р·Р°РєР°Р·С‡РёРєРµ
 func (s Storage) GetCustomerInfo(ctx context.Context, customerID int) (model.GetCustomerInfoResponse, error) {
 	tx, err := s.pgPool.Begin(ctx)
 	if err != nil {
@@ -48,7 +48,7 @@ func (s Storage) GetCustomerInfo(ctx context.Context, customerID int) (model.Get
 	return availableAttributes, nil
 }
 
-// GetAvailableTasksForCustomer получает доступные задачи для заказчика
+// GetAvailableTasksForCustomer РїРѕР»СѓС‡Р°РµС‚ РґРѕСЃС‚СѓРїРЅС‹Рµ Р·Р°РґР°С‡Рё РґР»СЏ Р·Р°РєР°Р·С‡РёРєР°
 func (s Storage) GetAvailableTasksForCustomer(ctx context.Context, customerID int) ([]model.GetAvailableTasksForCustomerResponse, error) {
 	rows, err := s.pgPool.Query(ctx, "SELECT id, name, weight FROM tasks WHERE customer_id = $1 AND porter_id IS NULL;", customerID)
 	if err != nil {
@@ -66,14 +66,14 @@ func (s Storage) GetAvailableTasksForCustomer(ctx context.Context, customerID in
 	return tasks, nil
 }
 
-// GetCustomerAndPortersStats получает характеристики заказчика и грузчиков
+// GetCustomerAndPortersStats РїРѕР»СѓС‡Р°РµС‚ С…Р°СЂР°РєС‚РµСЂРёСЃС‚РёРєРё Р·Р°РєР°Р·С‡РёРєР° Рё РіСЂСѓР·С‡РёРєРѕРІ
 func (s Storage) GetCustomerAndPortersStats(ctx context.Context, customerID int, porterIDs []int, taskID int) (int, map[int]model.GetAndCreatePorterInfo, error) {
 	tx, err := s.pgPool.Begin(ctx)
 	if err != nil {
 		return 0, nil, err
 	}
 
-	// получение стартового капитала
+	// РїРѕР»СѓС‡РµРЅРёРµ СЃС‚Р°СЂС‚РѕРІРѕРіРѕ РєР°РїРёС‚Р°Р»Р°
 	var customerStartCapital int
 	if err = tx.QueryRow(ctx, "SELECT start_capital FROM customers WHERE user_id = $1", customerID).
 		Scan(&customerStartCapital); err != nil {
@@ -81,7 +81,7 @@ func (s Storage) GetCustomerAndPortersStats(ctx context.Context, customerID int,
 		return 0, nil, err
 	}
 
-	// получение информации о грузчиках
+	// РїРѕР»СѓС‡РµРЅРёРµ РёРЅС„РѕСЂРјР°С†РёРё Рѕ РіСЂСѓР·С‡РёРєР°С…
 	porters := make(map[int]model.GetAndCreatePorterInfo)
 	for _, porterID := range porterIDs {
 		var porter model.GetAndCreatePorterInfo
@@ -101,7 +101,7 @@ func (s Storage) GetCustomerAndPortersStats(ctx context.Context, customerID int,
 	return customerStartCapital, porters, nil
 }
 
-// UpdateCustomer обновляет стартовый капитал заказчика
+// UpdateCustomer РѕР±РЅРѕРІР»СЏРµС‚ СЃС‚Р°СЂС‚РѕРІС‹Р№ РєР°РїРёС‚Р°Р» Р·Р°РєР°Р·С‡РёРєР°
 func (s Storage) UpdateCustomer(ctx context.Context, customerID int, customerStartCapital int) error {
 	_, err := s.pgPool.Exec(ctx, "UPDATE customers SET start_capital = $1 WHERE user_id = $2", customerStartCapital, customerID)
 	return err

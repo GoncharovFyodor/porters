@@ -5,14 +5,14 @@ import (
 	"porters/internal/game/model"
 )
 
-// TaskRepository репозиторий задачи
+// TaskRepository СЂРµРїРѕР·РёС‚РѕСЂРёР№ Р·Р°РґР°С‡Рё
 type TaskRepository interface {
 	CreateRandomTasks(ctx context.Context, customerUsername string) error
 	GetTask(ctx context.Context, taskID int) (model.GetTaskResponse, error)
 	UpdateTaskAsDone(ctx context.Context, taskId, porterID int) error
 }
 
-// CreateRandomTasks создает случайные задачи
+// CreateRandomTasks СЃРѕР·РґР°РµС‚ СЃР»СѓС‡Р°Р№РЅС‹Рµ Р·Р°РґР°С‡Рё
 func (gs GameService) CreateRandomTasks(ctx context.Context, customerUsername string) error {
 	return gs.gameRepository.CreateRandomTasks(ctx, customerUsername)
 }

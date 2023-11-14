@@ -2,9 +2,6 @@ package main
 
 import (
 	"context"
-	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/log"
-	"github.com/jackc/pgx/v5/pgxpool"
 	"os"
 	"porters/hashing"
 	authHandler "porters/internal/auth/delivery/http"
@@ -14,6 +11,10 @@ import (
 	gameHandler "porters/internal/game/delivery/http"
 	gameRepo "porters/internal/game/repository"
 	gameService "porters/internal/game/service"
+
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/log"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 var (

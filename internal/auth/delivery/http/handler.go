@@ -2,8 +2,9 @@ package delivery
 
 import (
 	"context"
-	"github.com/gofiber/fiber/v2"
 	"porters/internal/auth/model"
+
+	"github.com/gofiber/fiber/v2"
 )
 
 type UserService interface {
