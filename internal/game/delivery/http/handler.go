@@ -45,7 +45,7 @@ func NewHandler(app *fiber.App, gameService GameService) *fiber.App {
 
 	app.Get("/me", h.authMiddleware, h.GetInfo)
 	app.Get("/tasks", h.authMiddleware, h.GetTasks)
-	app.Post("/public/tasks", h.CreateRandomTasks)
+	app.Post("/tasks", h.CreateRandomTasks)
 	app.Post("/start", h.authMiddleware, h.StartGame)
 
 	return app
