@@ -29,6 +29,7 @@ func (s Storage) GetCustomerInfo(ctx context.Context, customerID int) (model.Get
 		return model.GetCustomerInfoResponse{}, err
 	}
 
+	// получение стартового капитала из БД
 	availableAttributes := model.GetCustomerInfoResponse{}
 	if err = tx.QueryRow(ctx, "SELECT start_capital FROM customers WHERE user_id = $1", customerID).
 		Scan(&availableAttributes.CustomerStartCapital); err != nil {
@@ -36,6 +37,7 @@ func (s Storage) GetCustomerInfo(ctx context.Context, customerID int) (model.Get
 		return model.GetCustomerInfoResponse{}, err
 	}
 
+	// получение данных о грузчиках из БД
 	rows, err := tx.Query(ctx, "SELECT user_id, max_weight, drunk, fatigue, salary FROM porters")
 	for rows.Next() {
 		porter := model.Porter{}
@@ -48,7 +50,7 @@ func (s Storage) GetCustomerInfo(ctx context.Context, customerID int) (model.Get
 	return availableAttributes, nil
 }
 
-// GetAvailableTasksForCustomer получает доступные задачи для заказчика
+// GetAvailableTasksForCustomer получает из БД доступные задачи для заказчика
 func (s Storage) GetAvailableTasksForCustomer(ctx context.Context, customerID int) ([]model.GetAvailableTasksForCustomerResponse, error) {
 	rows, err := s.pgPool.Query(ctx, "SELECT id, name, weight FROM tasks WHERE customer_id = $1 AND porter_id IS NULL;", customerID)
 	if err != nil {
@@ -67,13 +69,13 @@ func (s Storage) GetAvailableTasksForCustomer(ctx context.Context, customerID in
 }
 
 // GetCustomerAndPortersStats получает характеристики заказчика и грузчиков
-func (s Storage) GetCustomerAndPortersStats(ctx context.Context, customerID int, porterIDs []int, taskID int) (int, map[int]model.GetAndCreatePorterInfo, error) {
+func (s Storage) GetCustomerAndPortersStats(ctx context.Context, customerID int, porterIDs []int) (int, map[int]model.GetAndCreatePorterInfo, error) {
 	tx, err := s.pgPool.Begin(ctx)
 	if err != nil {
 		return 0, nil, err
 	}
 
-	// получение стартового капитала
+	// получение стартового капитала из БД
 	var customerStartCapital int
 	if err = tx.QueryRow(ctx, "SELECT start_capital FROM customers WHERE user_id = $1", customerID).
 		Scan(&customerStartCapital); err != nil {
@@ -81,7 +83,7 @@ func (s Storage) GetCustomerAndPortersStats(ctx context.Context, customerID int,
 		return 0, nil, err
 	}
 
-	// получение информации о грузчиках
+	// получение информации о грузчиках из БД
 	porters := make(map[int]model.GetAndCreatePorterInfo)
 	for _, porterID := range porterIDs {
 		var porter model.GetAndCreatePorterInfo

@@ -9,7 +9,7 @@ import (
 type CustomerRepository interface {
 	GetCustomerInfo(ctx context.Context, customerID int) (model.GetCustomerInfoResponse, error)
 	GetAvailableTasksForCustomer(ctx context.Context, customerID int) ([]model.GetAvailableTasksForCustomerResponse, error)
-	GetCustomerAndPortersStats(ctx context.Context, customerID int, porterIDs []int, taskID int) (int, map[int]model.GetAndCreatePorterInfo, error)
+	GetCustomerAndPortersStats(ctx context.Context, customerID int, porterIDs []int) (int, map[int]model.GetAndCreatePorterInfo, error)
 	UpdateCustomer(ctx context.Context, customerID int, customerStartCapital int) error
 }
 
@@ -42,7 +42,7 @@ func (gs GameService) GetAvailableTasksForCustomer(ctx context.Context, customer
 
 // StartGame запускает игру
 func (gs GameService) StartGame(ctx context.Context, customerID int, porterIDs []int, taskID int) (bool, error) {
-	customerStartCapital, porters, err := gs.gameRepository.GetCustomerAndPortersStats(ctx, customerID, porterIDs, taskID)
+	customerStartCapital, porters, err := gs.gameRepository.GetCustomerAndPortersStats(ctx, customerID, porterIDs)
 	if err != nil {
 		return false, err
 	}

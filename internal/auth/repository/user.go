@@ -61,7 +61,7 @@ func (s Storage) CreateUser(ctx context.Context, user authmodel.User) error {
 	return tx.Commit(ctx)
 }
 
-// GetByCredentials получает данные пользователя по введенным имени пользователя и паролю
+// GetByCredentials получает данные пользователя из БД по введенным имени пользователя и паролю
 func (s Storage) GetByCredentials(ctx context.Context, username, password string) (authmodel.User, error) {
 	var user authmodel.User
 	if err := s.pgPool.QueryRow(ctx, "SELECT id, username, password, role FROM users WHERE username = $1 AND password = $2",
